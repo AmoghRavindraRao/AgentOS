@@ -1,0 +1,23 @@
+# AgentOS backend — Day 1 dependencies
+# Mirror of pyproject.toml [project].dependencies for plain `pip install -r`.
+#
+# Cognee ships the embedded default stack (SQLite + LanceDB + Kuzu/Ladybug):
+# zero containers to stand up. The [scraping,docs] extras add the web + PDF/HTML
+# loaders used later by the ResearcherAgent.
+cognee[scraping,docs]>=1.0.0
+
+fastapi>=0.115
+uvicorn[standard]>=0.30
+sqlmodel>=0.0.22
+aiosqlite>=0.20
+httpx>=0.27
+pypdf>=5.0
+trafilatura>=1.12
+pydantic-settings>=2.4
+python-dotenv>=1.0
+sse-starlette>=2.1
+
+# Tests (Day 2+)
+pytest>=8.3
+pytest-asyncio>=0.24
+hypothesis>=6.112

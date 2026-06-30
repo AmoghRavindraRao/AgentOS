@@ -1,0 +1,22 @@
+.venv/
+cognee/
+.agents/
+.vscode/
+resources/
+
+.env
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Local smoke-test/runtime state
+agentos.db
+agentos.db-*
+.anon_id
+.cognee/
+.cognee_*/
+.cognee_system/
+.cognee_data/

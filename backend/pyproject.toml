@@ -1,0 +1,44 @@
+[project]
+name = "agentos-backend"
+version = "0.1.0"
+description = "AgentOS — Multi-Agent Research Platform backend (Planner → Researcher → Writer) powered by Cognee."
+readme = "README_DAY1.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+# Day 1 dependency set. Cognee brings the embedded graph+vector stack
+# (SQLite + LanceDB + Kuzu/Ladybug). The [scraping,docs] extras add the
+# web + PDF/HTML loaders the ResearcherAgent needs later in the week.
+dependencies = [
+    "cognee[scraping,docs]>=1.0.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "sqlmodel>=0.0.22",
+    "aiosqlite>=0.20",
+    "httpx>=0.27",
+    "pypdf>=5.0",
+    "trafilatura>=1.12",
+    "pydantic-settings>=2.4",
+    "python-dotenv>=1.0",
+    "sse-starlette>=2.1",
+]
+
+[project.optional-dependencies]
+# Property-based + integration tests (used from Day 2 onward).
+test = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "hypothesis>=6.112",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
