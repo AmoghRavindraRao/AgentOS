@@ -124,26 +124,29 @@ class CogneeClient:
     # -- reads -------------------------------------------------------------
 
     async def recall(
-        self,
-        dataset_name: str,
-        query: str,
-        k: int = 10,
-        query_type: SearchType = SearchType.GRAPH_COMPLETION,
+    self,
+    dataset_name: str,
+    query: str,
+    k: int = 10,
+    query_type: SearchType = SearchType.GRAPH_COMPLETION,
     ) -> list[RecallHit]:
-        """Query the domain brain, then apply the app-side confidence re-rank.
-
-        Note the scope param is ``datasets=[dataset_name]`` (a list) — NOT
-        ``dataset_name=``, which recall() silently ignores.
-        """
-        raw = await cognee.recall(
-            query_text=query,
-            datasets=[dataset_name],
-            query_type=query_type,
-            top_k=k * 3,  # over-fetch; the re-ranker trims to k
-        )
-        hits = [_to_hit(r) for r in raw]
-        ranked = self._rerank.rank(dataset_name, hits)
-        return ranked[:k]
+        """Query the domain brain. Returns empty list if domain has no memory yet."""
+        try:
+            raw = await cognee.recall(
+                query_text=query,
+                datasets=[dataset_name],
+                query_type=query_type,
+                top_k=k * 3,
+            )
+            hits = [_to_hit(r) for r in raw]
+            ranked = self._rerank.rank(dataset_name, hits)
+            return ranked[:k]
+        except Exception as e:
+            # Empty/new domain brain — agents proceed with no prior context.
+            # This is expected on first session for any domain.
+            if "DatasetNotFoundError" in str(type(e).__name__) or "not found" in str(e).lower() or "404" in str(e):
+                return []
+            raise
 
     # -- self-improvement --------------------------------------------------
 

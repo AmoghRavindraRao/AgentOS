@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import domains
+from app.api.routes import domains, sessions, stream
 from app.db.session import init_db
 from app.memory.cognee_lifecycle import close_cognee_async_resources
 
@@ -25,9 +25,8 @@ async def lifespan(app: FastAPI):
         await close_cognee_async_resources()
 
 
-app = FastAPI(title="AgentOS", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="AgentOS", version="0.2.0", lifespan=lifespan)
 
-# Dev CORS: the Vite/React frontend runs on :3000 (or :5173).
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173"],
@@ -37,6 +36,8 @@ app.add_middleware(
 )
 
 app.include_router(domains.router)
+app.include_router(sessions.router)
+app.include_router(stream.router)
 
 
 @app.get("/health")
