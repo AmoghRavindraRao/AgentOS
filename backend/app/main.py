@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import domains, sessions, stream
+from app.api.routes import domains, sessions, stream, sources
 from app.db.session import init_db
 from app.memory.cognee_lifecycle import close_cognee_async_resources
 
@@ -38,6 +38,7 @@ app.add_middleware(
 app.include_router(domains.router)
 app.include_router(sessions.router)
 app.include_router(stream.router)
+app.include_router(sources.router)
 
 
 @app.get("/health")

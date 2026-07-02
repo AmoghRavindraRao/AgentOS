@@ -1,11 +1,8 @@
-"""Session routes.
-
-POST /api/v1/domains/{domain_id}/run  — starts a session, returns session_id immediately
-GET  /api/v1/sessions/{session_id}    — poll for status + output
-"""
+"""Session routes."""
 from __future__ import annotations
 
 import asyncio
+import uuid
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
@@ -47,15 +44,13 @@ async def run_session(
     if domain.user != user:
         raise HTTPException(status_code=403, detail="Not your domain")
 
+    # Generate session_id HERE so we can return it immediately
+    session_id = uuid.uuid4().hex
     orchestrator = SessionOrchestrator(cognee=cognee_client)
 
-    # Run in background so the HTTP response returns immediately
-    # The SSE endpoint /sessions/{id}/stream delivers live progress
-    background_tasks.add_task(orchestrator.run_session, domain, body.query)
+    background_tasks.add_task(orchestrator.run_session, domain, body.query, session_id)
 
-    # We need the session_id — orchestrator creates it internally.
-    # For Day 2 we return a placeholder; on Day 3 we wire up proper session ID return.
-    return {"status": "started", "domain_id": domain_id, "query": body.query}
+    return {"session_id": session_id, "status": "started", "domain_id": domain_id}
 
 
 @router.get("/sessions/{session_id}", response_model=SessionOut)
